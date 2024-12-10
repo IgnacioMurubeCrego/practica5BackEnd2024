@@ -1,9 +1,9 @@
 import { ApolloServer } from "@apollo/server";
 import { schema } from "./schema.ts";
 import { MongoClient } from "mongodb";
-import { DinosaurModel } from "./types.ts";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { resolvers } from "./resolvers.ts";
+import { CourseModel, StudentModel, TeacherModel } from "./types.ts";
 
 const MONGO_URL = Deno.env.get("MONGO_URL");
 
@@ -16,8 +16,10 @@ await mongoClient.connect();
 
 console.info("Connected to MongoDB");
 
-const mongoDB = mongoClient.db("dinosaurs");
-const DinosaursCollection = mongoDB.collection<DinosaurModel>("dinosaurs");
+const mongoDB = mongoClient.db("Clases");
+const studentsCollection = mongoDB.collection<StudentModel>("estudiantes");
+const teachersCollection = mongoDB.collection<TeacherModel>("profesores");
+const coursesCollection = mongoDB.collection<CourseModel>("cursos");
 
 const server = new ApolloServer({
 	typeDefs: schema,
@@ -25,7 +27,11 @@ const server = new ApolloServer({
 });
 
 const { url } = await startStandaloneServer(server, {
-	context: async () => ({ DinosaursCollection }),
+	context: async () => ({
+		studentsCollection,
+		teachersCollection,
+		coursesCollection,
+	}),
 });
 
 console.info(`Server ready at ${url}`);
