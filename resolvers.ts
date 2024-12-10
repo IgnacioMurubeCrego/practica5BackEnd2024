@@ -155,7 +155,7 @@ export const resolvers = {
 				email,
 				enrolledCourses: [],
 			};
-			return fromModelToStudent(studentModel, context.coursesCollection);
+			return fromModelToStudent(studentModel!, context.coursesCollection);
 		},
 	},
 
@@ -184,7 +184,7 @@ export const resolvers = {
 			studentIds: [],
 		};
 		return fromModelToCourse(
-			courseModel,
+			courseModel!,
 			context.studentsCollection,
 			context.teachersCollection
 		);
@@ -211,30 +211,18 @@ export const resolvers = {
 			email,
 			coursesTaught: [],
 		};
-		return fromModelToTeacher(teacherModel, context.coursesCollection);
+		return fromModelToTeacher(teacherModel!, context.coursesCollection);
 	},
 
-	updateTeacher: async (
+	/*updateStudent: async (
 		_: unknown,
 		__: unknown,
-		args: { name: string; email: string },
+		args: { id: string, name?: string; email?: string },
 		context: {
-			teachersCollection: Collection<TeacherModel>;
+			studentsCollection: Collection<TeacherModel>;
 			coursesCollection: Collection<CourseModel>;
 		}
-	): Promise<Teacher> => {
-		const { name, email } = args;
-		const { insertedId } = await context.teachersCollection.insertOne({
-			name,
-			email,
-			coursesTaught: [],
-		});
-		const teacherModel: TeacherModel = {
-			_id: insertedId,
-			name,
-			email,
-			coursesTaught: [],
-		};
-		return fromModelToTeacher(teacherModel, context.coursesCollection);
-	},
+	): Promise<Student | null> => {
+		const {modifiedCount} = context.studentsCollection
+	},*/
 };
