@@ -69,9 +69,9 @@ export const fromModelToCourse = async (
 		})
 		.toArray();
 
-	const teacherId: string = teacherModel._id.toString();
+	const teacherId: string = teacherModel._id!.toString();
 	const studentIds: string[] = studentsModels.map((s: StudentModel) =>
-		s._id.toString()
+		s._id!.toString()
 	);
 
 	return {
