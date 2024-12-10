@@ -158,6 +158,7 @@ export const resolvers = {
 			return fromModelToStudent(studentModel, context.coursesCollection);
 		},
 	},
+
 	createCourse: async (
 		_: unknown,
 		__: unknown,
@@ -188,7 +189,32 @@ export const resolvers = {
 			context.teachersCollection
 		);
 	},
+
 	createTeacher: async (
+		_: unknown,
+		__: unknown,
+		args: { name: string; email: string },
+		context: {
+			teachersCollection: Collection<TeacherModel>;
+			coursesCollection: Collection<CourseModel>;
+		}
+	): Promise<Teacher> => {
+		const { name, email } = args;
+		const { insertedId } = await context.teachersCollection.insertOne({
+			name,
+			email,
+			coursesTaught: [],
+		});
+		const teacherModel: TeacherModel = {
+			_id: insertedId,
+			name,
+			email,
+			coursesTaught: [],
+		};
+		return fromModelToTeacher(teacherModel, context.coursesCollection);
+	},
+
+	updateTeacher: async (
 		_: unknown,
 		__: unknown,
 		args: { name: string; email: string },

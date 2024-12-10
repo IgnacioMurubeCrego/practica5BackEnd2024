@@ -1,8 +1,24 @@
 export const schema = `#graphql
-type Dinosaur {
-  id: ID!
-  name: String!
-  type: String!
+type Student{
+    id : ID!,
+    name : String!,
+    email : String!,
+    enrolledCourses : [ID!]!
+}
+
+type Teacher{
+    id : ID!,
+    name : String!,
+    email : String!
+    coursesTaught : [!ID]!
+}
+
+type Course{
+    id: ID!
+    title: String!
+    description: String!
+    teacherId: ID!
+    studentIds: [ID!]!
 }
 
 type Query {
