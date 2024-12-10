@@ -10,7 +10,7 @@ type Teacher{
     id : ID!,
     name : String!,
     email : String!
-    coursesTaught : [!ID]!
+    coursesTaught : [ID!]!
 }
 
 type Course{
