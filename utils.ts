@@ -7,7 +7,6 @@ import {
 	Teacher,
 	TeacherModel,
 } from "./types.ts";
-import { GraphQLError } from "../../../AppData/Local/deno/npm/registry.npmjs.org/graphql/16.9.0/index.d.ts";
 
 export const fromModelToStudent = async (
 	studentModel: StudentModel,
@@ -62,7 +61,7 @@ export const fromModelToCourse = async (
 		_id: new ObjectId(courseModel.teacherId),
 	});
 	if (!teacherModel) {
-		throw new GraphQLError("Teacher not found for this course");
+		throw console.error("Teacher not found");
 	}
 	const studentsModels: StudentModel[] = await studentsCollection
 		.find({
