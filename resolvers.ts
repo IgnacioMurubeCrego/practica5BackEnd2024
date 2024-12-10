@@ -134,185 +134,190 @@ export const resolvers = {
 		},
 	},
 	Mutation: {
-		// createStudent: async (
-		// 	_: unknown,
-		// 	args: { name: string; email: string },
-		// 	context: {
-		// 		studentsCollection: Collection<StudentModel>;
-		// 		coursesCollection: Collection<CourseModel>;
-		// 	}
-		// ): Promise<Student> => {
-		// 	const { name, email } = args;
-		// 	const { insertedId } = await context.studentsCollection.insertOne({
-		// 		name,
-		// 		email,
-		// 		enrolledCourses: [],
-		// 	});
-		// 	const studentModel: StudentModel = {
-		// 		_id: insertedId,
-		// 		name,
-		// 		email,
-		// 		enrolledCourses: [],
-		// 	};
-		// 	return fromModelToStudent(studentModel!, context.coursesCollection);
-		// },
+		createStudent: async (
+			_: unknown,
+			args: { name: string; email: string },
+			context: {
+				studentsCollection: Collection<StudentModel>;
+				coursesCollection: Collection<CourseModel>;
+			}
+		): Promise<Student> => {
+			const { name, email } = args;
+			const { insertedId } = await context.studentsCollection.insertOne({
+				name,
+				email,
+				enrolledCourses: [],
+			});
+			const studentModel: StudentModel = {
+				_id: insertedId,
+				name,
+				email,
+				enrolledCourses: [],
+			};
+			return fromModelToStudent(studentModel!, context.coursesCollection);
+		},
+
+		createCourse: async (
+			_: unknown,
+			args: { title: string; description: string; teacherId: string },
+			context: {
+				studentsCollection: Collection<StudentModel>;
+				teachersCollection: Collection<TeacherModel>;
+				coursesCollection: Collection<CourseModel>;
+			}
+		): Promise<Course> => {
+			const { title, description, teacherId } = args;
+			const { insertedId } = await context.coursesCollection.insertOne({
+				title,
+				description,
+				teacherId: new ObjectId(teacherId),
+				studentIds: [],
+			});
+			const courseModel: CourseModel = {
+				_id: insertedId,
+				title,
+				description,
+				teacherId,
+				studentIds: [],
+			};
+			return fromModelToCourse(
+				courseModel!,
+				context.studentsCollection,
+				context.teachersCollection
+			);
+		},
+
+		createTeacher: async (
+			_: unknown,
+			args: { name: string; email: string },
+			context: {
+				teachersCollection: Collection<TeacherModel>;
+				coursesCollection: Collection<CourseModel>;
+			}
+		): Promise<Teacher> => {
+			const { name, email } = args;
+			const { insertedId } = await context.teachersCollection.insertOne({
+				name,
+				email,
+				coursesTaught: [],
+			});
+			const teacherModel: TeacherModel = {
+				_id: insertedId,
+				name,
+				email,
+				coursesTaught: [],
+			};
+			return fromModelToTeacher(teacherModel!, context.coursesCollection);
+		},
+
+		updateStudent: async (
+			_: unknown,
+			args: { id: string; name?: string; email?: string },
+			context: {
+				studentsCollection: Collection<StudentModel>;
+				coursesCollection: Collection<CourseModel>;
+			}
+		): Promise<Student | null> => {
+			const { id, name, email } = args;
+			const { modifiedCount } = await context.studentsCollection.updateOne(
+				{ _id: new ObjectId(id) },
+				{ $set: { id, name, email } }
+			);
+
+			if (modifiedCount === 0) {
+				console.log("Student not found");
+				return null;
+			}
+
+			const updatedStudentModel = await context.studentsCollection.findOne({
+				_id: new ObjectId(id),
+			});
+
+			if (!updatedStudentModel) {
+				console.log("Updated Student not found");
+				return null;
+			}
+
+			const updatedStudent: Student = await fromModelToStudent(
+				updatedStudentModel,
+				context.coursesCollection
+			);
+
+			return updatedStudent;
+		},
+
+		updateCourse: async (
+			_: unknown,
+			args: { id: string; name?: string; email?: string },
+			context: {
+				studentsCollection: Collection<StudentModel>;
+				coursesCollection: Collection<CourseModel>;
+			}
+		): Promise<Student | null> => {
+			const { id, name, email } = args;
+			const { modifiedCount } = await context.studentsCollection.updateOne(
+				{ _id: new ObjectId(id) },
+				{ $set: { id, name, email } }
+			);
+
+			if (modifiedCount === 0) {
+				console.log("Student not found");
+				return null;
+			}
+
+			const updatedStudentModel = await context.studentsCollection.findOne({
+				_id: new ObjectId(id),
+			});
+
+			if (!updatedStudentModel) {
+				console.log("Updated Student not found");
+				return null;
+			}
+
+			const updatedStudent: Student = await fromModelToStudent(
+				updatedStudentModel,
+				context.coursesCollection
+			);
+
+			return updatedStudent;
+		},
+
+		updateTeacher: async (
+			_: unknown,
+			args: { id: string; name?: string; email?: string },
+			context: {
+				teachersCollection: Collection<TeacherModel>;
+				coursesCollection: Collection<CourseModel>;
+			}
+		): Promise<Teacher | null> => {
+			const { id, name, email } = args;
+			const { modifiedCount } = await context.teachersCollection.updateOne(
+				{ _id: new ObjectId(id) },
+				{ $set: { id, name, email } }
+			);
+			if (modifiedCount === 0) {
+				return null;
+			}
+
+			const updatedTeacherModel = await context.teachersCollection.findOne({
+				_id: new ObjectId(id),
+			});
+
+			if (!updatedTeacherModel) {
+				return null;
+			}
+
+			const updatedTeacher: Teacher = await fromModelToTeacher(
+				updatedTeacherModel,
+				context.coursesCollection
+			);
+
+			return updatedTeacher;
+		},
+
+		/*deleteStudent: async(
+            _: unknown,
+            args: {id: string}
+        ):Pro*/
 	},
-
-	// createCourse: async (
-	// 	_: unknown,
-	// 	args: { title: string; description: string; teacherId: string },
-	// 	context: {
-	// 		studentsCollection: Collection<StudentModel>;
-	// 		teachersCollection: Collection<TeacherModel>;
-	// 		coursesCollection: Collection<CourseModel>;
-	// 	}
-	// ): Promise<Course> => {
-	// 	const { title, description, teacherId } = args;
-	// 	const { insertedId } = await context.coursesCollection.insertOne({
-	// 		title,
-	// 		description,
-	// 		teacherId: new ObjectId(teacherId),
-	// 		studentIds: [],
-	// 	});
-	// 	const courseModel: CourseModel = {
-	// 		_id: insertedId,
-	// 		title,
-	// 		description,
-	// 		teacherId,
-	// 		studentIds: [],
-	// 	};
-	// 	return fromModelToCourse(
-	// 		courseModel!,
-	// 		context.studentsCollection,
-	// 		context.teachersCollection
-	// 	);
-	// },
-
-	// createTeacher: async (
-	// 	_: unknown,
-	// 	args: { name: string; email: string },
-	// 	context: {
-	// 		teachersCollection: Collection<TeacherModel>;
-	// 		coursesCollection: Collection<CourseModel>;
-	// 	}
-	// ): Promise<Teacher> => {
-	// 	const { name, email } = args;
-	// 	const { insertedId } = await context.teachersCollection.insertOne({
-	// 		name,
-	// 		email,
-	// 		coursesTaught: [],
-	// 	});
-	// 	const teacherModel: TeacherModel = {
-	// 		_id: insertedId,
-	// 		name,
-	// 		email,
-	// 		coursesTaught: [],
-	// 	};
-	// 	return fromModelToTeacher(teacherModel!, context.coursesCollection);
-	// },
-
-	// updateStudent: async (
-	// 	_: unknown,
-	// 	args: { id: string; name?: string; email?: string },
-	// 	context: {
-	// 		studentsCollection: Collection<StudentModel>;
-	// 		coursesCollection: Collection<CourseModel>;
-	// 	}
-	// ): Promise<Student | null> => {
-	// 	const { id, name, email } = args;
-	// 	const { modifiedCount } = await context.studentsCollection.updateOne(
-	// 		{ _id: new ObjectId(id) },
-	// 		{ $set: { id, name, email } }
-	// 	);
-
-	// 	if (modifiedCount === 0) {
-	// 		console.log("Student not found");
-	// 		return null;
-	// 	}
-
-	// 	const updatedStudentModel = await context.studentsCollection.findOne({
-	// 		_id: new ObjectId(id),
-	// 	});
-
-	// 	if (!updatedStudentModel) {
-	// 		console.log("Updated Student not found");
-	// 		return null;
-	// 	}
-
-	// 	const updatedStudent: Student = await fromModelToStudent(
-	// 		updatedStudentModel,
-	// 		context.coursesCollection
-	// 	);
-
-	// 	return updatedStudent;
-	// },
-
-	/*updateCourse: async (
-		_: unknown,
-		args: { id: string; name?: string; email?: string },
-		context: {
-			studentsCollection: Collection<StudentModel>;
-			coursesCollection: Collection<CourseModel>;
-		}
-	): Promise<Student | null> => {
-		const { id, name, email } = args;
-		const { modifiedCount } = await context.studentsCollection.updateOne(
-			{ _id: new ObjectId(id) },
-			{ $set: { id, name, email } }
-		);
-
-		if (modifiedCount === 0) {
-			console.log("Student not found");
-			return null;
-		}
-
-		const updatedStudentModel = await context.studentsCollection.findOne({
-			_id: new ObjectId(id),
-		});
-
-		if (!updatedStudentModel) {
-			console.log("Updated Student not found");
-			return null;
-		}
-
-		const updatedStudent: Student = await fromModelToStudent(
-			updatedStudentModel,
-			context.coursesCollection
-		);
-
-		return updatedStudent;
-	},*/
-
-	// updateTeacher: async (
-	// 	_: unknown,
-	// 	args: { id: string; name?: string; email?: string },
-	// 	context: {
-	// 		teachersCollection: Collection<TeacherModel>;
-	// 		coursesCollection: Collection<CourseModel>;
-	// 	}
-	// ): Promise<Teacher | null> => {
-	// 	const { id, name, email } = args;
-	// 	const { modifiedCount } = await context.teachersCollection.updateOne(
-	// 		{ _id: new ObjectId(id) },
-	// 		{ $set: { id, name, email } }
-	// 	);
-	// 	if (modifiedCount === 0) {
-	// 		return null;
-	// 	}
-
-	// 	const updatedTeacherModel = await context.teachersCollection.findOne({
-	// 		_id: new ObjectId(id),
-	// 	});
-
-	// 	if (!updatedTeacherModel) {
-	// 		return null;
-	// 	}
-
-	// 	const updatedTeacher: Teacher = await fromModelToTeacher(
-	// 		updatedTeacherModel,
-	// 		context.coursesCollection
-	// 	);
-
-	// 	return updatedTeacher;
-	// },
 };
