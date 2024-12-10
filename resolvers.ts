@@ -162,7 +162,7 @@ export const resolvers = {
 	createCourse: async (
 		_: unknown,
 		__: unknown,
-		args: { title: string; description: string; teacherId: ObjectId },
+		args: { title: string; description: string; teacherId: string },
 		context: {
 			studentsCollection: Collection<StudentModel>;
 			teachersCollection: Collection<TeacherModel>;
@@ -173,7 +173,7 @@ export const resolvers = {
 		const { insertedId } = await context.coursesCollection.insertOne({
 			title,
 			description,
-			teacherId,
+			teacherId: new ObjectId(teacherId),
 			studentIds: [],
 		});
 		const courseModel: CourseModel = {
