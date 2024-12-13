@@ -1,16 +1,16 @@
 export const schema = `#graphql
 type Student{
-    id : ID!,
-    name : String!,
-    email : String!,
-    enrolledCourses : [ID!]!
+    id: ID!,
+    name: String!,
+    email: String!,
+    enrolledCourses: [ID!]!
 }
 
 type Teacher{
-    id : ID!,
-    name : String!,
-    email : String!
-    coursesTaught : [ID!]!
+    id: ID!,
+    name: String!,
+    email: String!
+    coursesTaught: [ID!]!
 }
 
 type Course{

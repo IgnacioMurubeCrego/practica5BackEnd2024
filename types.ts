@@ -10,7 +10,7 @@ export type Student = {
 	id: string;
 	name: string;
 	email: string;
-	enrolledCourses: string[];
+	enrolledCourses: Course[];
 };
 
 export type TeacherModel = OptionalId<{
@@ -23,7 +23,7 @@ export type Teacher = {
 	id: string;
 	name: string;
 	email: string;
-	coursesTaught: string[];
+	coursesTaught: Course[];
 };
 
 export type CourseModel = OptionalId<{
@@ -37,8 +37,8 @@ export type Course = {
 	id: string;
 	title: string;
 	description: string;
-	teacherId: string;
-	studentIds: string[];
+	teacher: Teacher;
+	students: Student[];
 };
 
 /*
