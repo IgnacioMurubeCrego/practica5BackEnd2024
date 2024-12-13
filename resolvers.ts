@@ -507,15 +507,20 @@ export const resolvers = {
 			});
 
 			if (!student_DB) {
+				console.log(`No student found with id ${studentId} in DB`);
 				return null;
 			}
 
 			const { modifiedCount } = await context.coursesCollection.updateOne(
-				{ _id: new ObjectId(courseId) },
+				{
+					_id: new ObjectId(courseId),
+					studentIds: { $exists: true, $type: "array" },
+				},
 				{ $pull: { studentIds: new ObjectId(studentId) } }
 			);
 
 			if (modifiedCount === 0) {
+				console.log(`No student found with id ${studentId} in course`);
 				return null;
 			}
 
