@@ -30,7 +30,7 @@ export type CourseModel = OptionalId<{
 	title: string;
 	description: string;
 	teacherId: ObjectId;
-	studentIds: Array<ObjectId>;
+	studentIds: ObjectId[];
 }>;
 
 export type Course = {

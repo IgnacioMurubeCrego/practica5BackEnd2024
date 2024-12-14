@@ -17,9 +17,9 @@ await mongoClient.connect();
 console.info("Connected to MongoDB");
 
 const mongoDB = mongoClient.db("Clases");
-const studentsCollection = mongoDB.collection<StudentModel>("estudiantes");
-const teachersCollection = mongoDB.collection<TeacherModel>("profesores");
-const coursesCollection = mongoDB.collection<CourseModel>("cursos");
+const studentCollection = mongoDB.collection<StudentModel>("estudiantes");
+const teacherCollection = mongoDB.collection<TeacherModel>("profesores");
+const courseCollection = mongoDB.collection<CourseModel>("cursos");
 
 const server = new ApolloServer({
 	typeDefs: schema,
@@ -28,9 +28,9 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
 	context: async () => ({
-		studentsCollection,
-		teachersCollection,
-		coursesCollection,
+		studentCollection,
+		teacherCollection,
+		courseCollection,
 	}),
 });
 

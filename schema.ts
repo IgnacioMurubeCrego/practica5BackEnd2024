@@ -3,22 +3,22 @@ type Student{
     id: ID!,
     name: String!,
     email: String!,
-    enrolledCourses: [ID!]!
+    enrolledCourses: [Course!]!
 }
 
 type Teacher{
     id: ID!,
     name: String!,
     email: String!
-    coursesTaught: [ID!]!
+    coursesTaught: [Course!]!
 }
 
 type Course{
     id: ID!
     title: String!
     description: String!
-    teacherId: ID!
-    studentIds: [ID!]!
+    teacherId: Teacher!
+    studentIds: [Student!]!
 }
 
 type Query {
