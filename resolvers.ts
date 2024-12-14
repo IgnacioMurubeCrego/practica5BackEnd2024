@@ -360,19 +360,57 @@ export const resolvers = {
 				return null;
 			}
 
-			const { modifiedCount } = await context.courseCollection.updateOne(
-				{
-					_id: new ObjectId(courseId),
-				},
-				{
-					$pull: {
-						studentIds: new ObjectId(studentId),
-					},
-				}
-			);
+			const course_DB = await context.courseCollection.findOne({
+				_id: new ObjectId(courseId),
+			});
 
-			if (modifiedCount === 0) {
+			if (!course_DB) {
+				console.log(`No course found with id ${courseId} in DB`);
+				return null;
+			}
+
+			const enrolled: CourseModel | null = await context.courseCollection.findOne({
+				studentIds: new ObjectId(studentId),
+			});
+
+			if (!enrolled) {
 				console.log(`No student found with id ${studentId} in course`);
+				return null;
+			}
+
+			const modifiedCourses: number = (
+				await context.courseCollection.updateOne(
+					{
+						_id: new ObjectId(courseId),
+					},
+					{
+						$pull: {
+							studentIds: new ObjectId(studentId),
+						},
+					}
+				)
+			).modifiedCount;
+
+			if (modifiedCourses === 0) {
+				console.log(`Error, no courses students where modified in update.`);
+				return null;
+			}
+
+			const modifiedStudents: number = (
+				await context.studentCollection.updateOne(
+					{
+						_id: new ObjectId(studentId),
+					},
+					{
+						$pull: {
+							enrolledCourses: new ObjectId(courseId),
+						},
+					}
+				)
+			).modifiedCount;
+
+			if (modifiedStudents === 0) {
+				console.log(`Error, no student courses where modified in update.`);
 				return null;
 			}
 
@@ -381,6 +419,7 @@ export const resolvers = {
 			});
 
 			if (!courseModel) {
+				console.log(`No course found with id ${courseId} in DB after the update`);
 				return null;
 			}
 
